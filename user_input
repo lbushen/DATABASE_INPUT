@@ -1,0 +1,57 @@
+#####ask user for input into database####
+
+#!/usr/bin/python
+
+import mariadb
+import sys
+
+# connect to the database
+try:
+		conn = mariadb.connect(
+			user="lee",
+			password="mypassword",
+			database="MY_KIDS")
+
+except mariadb.Error as e:
+		print(f"Error connecting to MariaDB Platform: {e}")
+		sys.exit(1)
+
+#get cursor
+cur = conn.cursor()
+
+try:
+		cur.execute("use MY_KIDS;")
+
+except mariadb.Error as e:
+		print(f"Error: {e}")
+
+# ask for user input
+name = input("Add name: ")
+
+while True:
+	try:
+		gender = input("Please enter gender: ")
+		if gender == "male" or gender == "female":
+			break;
+		else:
+			print("Gender should be either male or female")
+	except:
+		continue;
+
+while True:
+	try:
+		age = int(input("Add age: "))
+	except ValueError:
+		print("Sorry, I didn't understand that.")
+		continue;
+	else:
+		break;
+
+# add user input to database table
+add_data = f"INSERT INTO Kids  (name, gender, age) VALUES ('{name}', '{gender}', '{age}')"
+
+cur.execute(add_data)	
+	
+conn.commit()
+cur.close()
+conn.close()
